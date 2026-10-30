@@ -7,6 +7,14 @@ const lineFormat = winston.format.printf(
   ({ timestamp, level, message, stack }) => `${timestamp} [${level.toUpperCase()}] ${stack || message}`
 );
 
+const transports = [new winston.transports.Console({ level: 'info' })];
+if (!process.env.VERCEL) {
+  transports.push(
+    new winston.transports.File({ filename: path.join(logDirectory, 'app.log'), maxsize: 5 * 1024 * 1024, maxFiles: 5 }),
+    new winston.transports.File({ filename: path.join(logDirectory, 'error.log'), level: 'error', maxsize: 5 * 1024 * 1024, maxFiles: 5 })
+  );
+}
+
 const logger = winston.createLogger({
   level: 'http',
   format: winston.format.combine(
@@ -14,11 +22,7 @@ const logger = winston.createLogger({
     winston.format.errors({ stack: true }),
     lineFormat
   ),
-  transports: [
-    new winston.transports.Console({ level: 'info' }),
-    new winston.transports.File({ filename: path.join(logDirectory, 'app.log'), maxsize: 5 * 1024 * 1024, maxFiles: 5 }),
-    new winston.transports.File({ filename: path.join(logDirectory, 'error.log'), level: 'error', maxsize: 5 * 1024 * 1024, maxFiles: 5 }),
-  ],
+  transports,
 });
 
 module.exports = logger;

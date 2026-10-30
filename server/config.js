@@ -19,6 +19,7 @@ module.exports = {
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD || '',
     database: process.env.DB_NAME,
+    ...(process.env.DB_SSL === 'true' ? { ssl: { rejectUnauthorized: false } } : {}),
   },
   session: {
     secret: process.env.SESSION_SECRET,
