@@ -1,0 +1,21 @@
+CREATE TABLE IF NOT EXISTS users (
+  id            INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  username      VARCHAR(50)  NOT NULL,
+  password_hash VARCHAR(100) NOT NULL,
+  created_at    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_users_username (username)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS employees (
+  id         INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  name       VARCHAR(100) NOT NULL,
+  email      VARCHAR(150) NOT NULL,
+  phone      VARCHAR(20)  NULL,
+  department VARCHAR(50)  NOT NULL,
+  status     ENUM('Active', 'Inactive') NOT NULL DEFAULT 'Active',
+  created_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_employees_email (email)
+) ENGINE=InnoDB;
