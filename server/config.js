@@ -12,7 +12,7 @@ const timeoutMinutes = Number(process.env.SESSION_TIMEOUT_MINUTES) || 15;
 
 module.exports = {
   port: Number(process.env.PORT) || 3000,
-  isProduction: process.env.NODE_ENV === 'production',
+  isProduction: process.env.NODE_ENV === 'production' || Boolean(process.env.VERCEL),
   db: {
     host: process.env.DB_HOST || 'localhost',
     port: Number(process.env.DB_PORT) || 3306,
