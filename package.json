@@ -5,8 +5,8 @@
   "description": "Employee management dashboard with Express, MySQL and session-based login",
   "main": "server/index.js",
   "scripts": {
-    "start": "node server/index.js",
-    "dev": "node --watch server/index.js",
+    "start": "node init && node server/index.js",
+    "dev": "node init && node --watch server/index.js",
     "db:setup": "node server/scripts/setup-db.js"
   },
   "engines": {
