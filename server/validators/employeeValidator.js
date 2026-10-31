@@ -1,13 +1,51 @@
 const { DEPARTMENTS, STATUSES } = require('../constants');
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-const PHONE_PATTERN = /^\+?[0-9\s\-()]+$/;
+
+const PHONE_MIN_DIGITS = 7;
+const PHONE_MAX_DIGITS = 15;
+const PHONE_MAX_LENGTH = 20;
+
+function normalizePhone(value) {
+  return String(value ?? '').trim().replace(/\s+/g, ' ');
+}
+
+function getPhoneError(phone) {
+  if (!phone) return '';
+
+  if (/[^\d\s\-()+]/.test(phone)) {
+    return 'Use only digits, spaces, hyphens, brackets and a + at the start.';
+  }
+  if (phone.lastIndexOf('+') > 0) {
+    return 'The + sign can only be at the very start, for example +94 77 123 4567.';
+  }
+  if (!areBracketsBalanced(phone)) {
+    return 'Check the brackets: every ( needs a matching ).';
+  }
+
+  const digitCount = phone.replace(/\D/g, '').length;
+  if (digitCount < PHONE_MIN_DIGITS) return `Too short: enter at least ${PHONE_MIN_DIGITS} digits.`;
+  if (digitCount > PHONE_MAX_DIGITS) return `Too long: use at most ${PHONE_MAX_DIGITS} digits.`;
+  if (phone.length > PHONE_MAX_LENGTH) return `Too long: use at most ${PHONE_MAX_LENGTH} characters, including spaces.`;
+
+  return '';
+}
+
+function areBracketsBalanced(text) {
+  let depth = 0;
+  for (const character of text) {
+    if (character === '(') depth += 1;
+    if (character === ')') depth -= 1;
+    if (depth < 0) return false;
+  }
+  return depth === 0;
+}
 
 function validateEmployeeBody(body) {
   const values = {
     name: String(body.name || '').trim(),
     email: String(body.email || '').trim().toLowerCase(),
-    phone: String(body.phone || '').trim(),
+    phone: normalizePhone(body.phone),
     department: String(body.department || ''),
     status: String(body.status || 'Active'),
   };
@@ -19,10 +57,8 @@ function validateEmployeeBody(body) {
   if (!EMAIL_PATTERN.test(values.email) || values.email.length > 150) {
     errors.email = 'Enter a valid email address.';
   }
-  const phoneDigits = values.phone.replace(/\D/g, '');
-  if (values.phone && (!PHONE_PATTERN.test(values.phone) || phoneDigits.length < 7 || phoneDigits.length > 15 || values.phone.length > 20)) {
-    errors.phone = 'Enter a valid phone number.';
-  }
+  const phoneError = getPhoneError(values.phone);
+  if (phoneError) errors.phone = phoneError;
   if (!DEPARTMENTS.includes(values.department)) {
     errors.department = 'Choose a department from the list.';
   }

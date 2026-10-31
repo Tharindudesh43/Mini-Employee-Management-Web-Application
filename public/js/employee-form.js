@@ -1,5 +1,5 @@
 import * as api from './api.js';
-import { validateEmployee } from './validation.js';
+import { validateEmployee, normalizePhone } from './validation.js';
 
 const FIELDS = ['name', 'email', 'phone', 'department'];
 
@@ -30,7 +30,7 @@ function readValues() {
   return {
     name: form.elements.name.value.trim(),
     email: form.elements.email.value.trim().toLowerCase(),
-    phone: form.elements.phone.value.trim(),
+    phone: normalizePhone(form.elements.phone.value),
     department: form.elements.department.value,
     status: form.elements.status.value,
   };
@@ -90,4 +90,9 @@ export function initEmployeeForm(departments, callbacks) {
   FIELDS.forEach((field) =>
     form.elements[field].addEventListener('input', () => showErrors({ ...currentErrors(), [field]: '' }))
   );
+
+  const phoneInput = form.elements.phone;
+  phoneInput.addEventListener('input', () => {
+    phoneInput.value = phoneInput.value.replace(/[^\d\s\-()+]/g, '');
+  });
 }

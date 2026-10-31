@@ -157,10 +157,10 @@
       <nav class="footer__links" aria-label="Footer">
         <a href="#dashboard">Dashboard</a>
         <a href="#employees">Employees</a>
-        <a href="#top">Back to top</a>
+        <!-- <a href="#top">Back to top</a> -->
       </nav>
       <p class="footer__copy">
-        &copy; <span id="footer-year">2026</span> PeopleDesk. Built with HTML, CSS, JavaScript, Node.js and MySQL.
+        &copy; <span id="footer-year">2026</span> PeopleDesk. InTalent Asia
       </p>
     </div>
   </footer>
@@ -185,7 +185,7 @@
 
       <div class="field">
         <label for="field-phone">Phone number <span class="field__optional">(optional)</span></label>
-        <input type="tel" id="field-phone" name="phone" class="input" autocomplete="off" placeholder="+94 77 123 4567" aria-describedby="error-phone">
+        <input type="tel" id="field-phone" name="phone" class="input" autocomplete="off" inputmode="tel" maxlength="20" placeholder="+94 77 123 4567" aria-describedby="error-phone">
         <p class="field__error" id="error-phone"></p>
       </div>
 
@@ -226,7 +226,7 @@
     <p>You will need to log in again to manage employees.</p>
     <div class="dialog__actions">
       <button type="button" class="btn btn--ghost" id="logout-cancel-btn">Stay logged in</button>
-      <button type="button" class="btn btn--primary" id="logout-confirm-btn">Log out</button>
+      <button type="button" class="btn btn--danger" id="logout-confirm-btn">Log out</button>
     </div>
   </dialog>
 

@@ -1,5 +1,8 @@
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-const PHONE_PATTERN = /^\+?[0-9\s\-()]+$/;
+
+const PHONE_MIN_DIGITS = 7;
+const PHONE_MAX_DIGITS = 15;
+const PHONE_MAX_LENGTH = 20;
 
 export function validateEmployee(values, existingEmployees, editingId = null) {
   const errors = {};
@@ -20,10 +23,8 @@ export function validateEmployee(values, existingEmployees, editingId = null) {
     errors.email = 'Another employee already uses this email address.';
   }
 
-  const phone = (values.phone ?? '').trim();
-  if (phone && !isValidPhone(phone)) {
-    errors.phone = 'Enter a valid phone number, for example +94 77 123 4567.';
-  }
+  const phoneError = getPhoneError(normalizePhone(values.phone));
+  if (phoneError) errors.phone = phoneError;
 
   if (!values.department) {
     errors.department = 'Choose a department.';
@@ -32,9 +33,39 @@ export function validateEmployee(values, existingEmployees, editingId = null) {
   return errors;
 }
 
-function isValidPhone(phone) {
-  const digits = phone.replace(/\D/g, '');
-  return PHONE_PATTERN.test(phone) && digits.length >= 7 && digits.length <= 15;
+export function normalizePhone(value) {
+  return String(value ?? '').trim().replace(/\s+/g, ' ');
+}
+
+export function getPhoneError(phone) {
+  if (!phone) return '';
+
+  if (/[^\d\s\-()+]/.test(phone)) {
+    return 'Use only digits, spaces, hyphens, brackets and a + at the start.';
+  }
+  if (phone.lastIndexOf('+') > 0) {
+    return 'The + sign can only be at the very start, for example +94 77 123 4567.';
+  }
+  if (!areBracketsBalanced(phone)) {
+    return 'Check the brackets: every ( needs a matching ).';
+  }
+
+  const digitCount = phone.replace(/\D/g, '').length;
+  if (digitCount < PHONE_MIN_DIGITS) return `Too short: enter at least ${PHONE_MIN_DIGITS} digits.`;
+  if (digitCount > PHONE_MAX_DIGITS) return `Too long: use at most ${PHONE_MAX_DIGITS} digits.`;
+  if (phone.length > PHONE_MAX_LENGTH) return `Too long: use at most ${PHONE_MAX_LENGTH} characters, including spaces.`;
+
+  return '';
+}
+
+function areBracketsBalanced(text) {
+  let depth = 0;
+  for (const character of text) {
+    if (character === '(') depth += 1;
+    if (character === ')') depth -= 1;
+    if (depth < 0) return false;
+  }
+  return depth === 0;
 }
 
 function isEmailTaken(email, employees, editingId) {
