@@ -17,6 +17,7 @@ const SAMPLE_NAMES = [
 const SAMPLE_EMPLOYEES = SAMPLE_NAMES.map((name, index) => [
   name,
   `${name.toLowerCase().replace(/[^a-z ]/g, '').split(' ').join('.')}@peopledesk.example`,
+  `+94 77 ${String(index + 1).padStart(3, '0')} ${String(((index + 1) * 7919) % 10000).padStart(4, '0')}`,
   DEPARTMENTS[index % DEPARTMENTS.length],
   index % 5 === 3 ? 'Inactive' : 'Active',
 ]);
@@ -57,7 +58,7 @@ async function main() {
 
   const [[{ employeeCount }]] = await db.query('SELECT COUNT(*) AS employeeCount FROM employees');
   if (employeeCount === 0) {
-    await db.query('INSERT INTO employees (name, email, department, status) VALUES ?', [SAMPLE_EMPLOYEES]);
+    await db.query('INSERT INTO employees (name, email, phone, department, status) VALUES ?', [SAMPLE_EMPLOYEES]);
     console.log(`Added ${SAMPLE_EMPLOYEES.length} sample employees.`);
   } else {
     console.log('Employees already exist, skipped sample data.');
